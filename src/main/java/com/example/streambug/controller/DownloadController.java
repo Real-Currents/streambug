@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -30,7 +29,6 @@ public class DownloadController {
             .build()
             .get()
             .uri(uriBuilder -> uriBuilder.path("/stream-bytes/{n}").build(size))
-            .accept(MediaType.APPLICATION_OCTET_STREAM)
             .exchange();
 
       return exchange.flatMapMany(clientResponse -> {
@@ -46,7 +44,6 @@ public class DownloadController {
             .build()
             .get()
             .uri(uriBuilder -> uriBuilder.path("/image/png").build())
-            .accept(MediaType.APPLICATION_OCTET_STREAM)
             .exchange();
 
       return exchange.flatMapMany(clientResponse -> {
@@ -62,7 +59,6 @@ public class DownloadController {
             .build()
             .get()
             .uri(uriBuilder -> uriBuilder.path("/image/jpeg").build())
-            .accept(MediaType.APPLICATION_OCTET_STREAM)
             .exchange();
 
       return exchange.flatMapMany(clientResponse -> {
@@ -78,7 +74,6 @@ public class DownloadController {
             .build()
             .get()
             .uri(uriBuilder -> uriBuilder.path("/xml").build())
-            .accept(MediaType.APPLICATION_OCTET_STREAM)
             .exchange();
 
       return exchange.flatMapMany(clientResponse -> {
@@ -86,6 +81,23 @@ public class DownloadController {
          return clientResponse.bodyToFlux(DataBuffer.class);
       });
    }
+
+
+   @GetMapping(value = "/image/slow")
+   public Flux<DataBuffer> getImageHttpWatch(ServerHttpRequest request, ServerHttpResponse response) {
+      Mono<ClientResponse> exchange = WebClient.builder()
+            .baseUrl("https://www.httpwatch.com")
+            .build()
+            .get()
+            .uri(uriBuilder -> uriBuilder.path("httpgallery/chunked/chunkedimage.aspx").build())
+            .exchange();
+
+      return exchange.flatMapMany(clientResponse -> {
+         copyDownloadHeaders(response, clientResponse);
+         return clientResponse.bodyToFlux(DataBuffer.class);
+      });
+   }
+
 
    public void copyDownloadHeaders(ServerHttpResponse response, ClientResponse clientResponse) {
       HttpHeaders httpHeaders = clientResponse.headers().asHttpHeaders();
