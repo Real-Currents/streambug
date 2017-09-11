@@ -2,16 +2,9 @@ package com.example.streambug;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class StreamBugApplication extends SpringBootServletInitializer {
-
-   @Override
-   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-      return application.sources(StreamBugApplication.class);
-   }
+public class StreamBugApplication {
 
    public static void main(String[] args) {
       SpringApplication.run(StreamBugApplication.class, args);
