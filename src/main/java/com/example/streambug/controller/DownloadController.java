@@ -101,11 +101,17 @@ public class DownloadController {
 
    public void copyDownloadHeaders(ServerHttpResponse response, ClientResponse clientResponse) {
       HttpHeaders httpHeaders = clientResponse.headers().asHttpHeaders();
-      response.getHeaders().setLastModified(httpHeaders.getLastModified());
-      response.getHeaders().setCacheControl(httpHeaders.getCacheControl());
-      response.getHeaders().setETag(httpHeaders.getETag());
       response.getHeaders().setContentType(httpHeaders.getContentType());
-      response.getHeaders().setContentLength(httpHeaders.getContentLength());
+      response.getHeaders().setLastModified(httpHeaders.getLastModified());
+      if (httpHeaders.getCacheControl() != null) {
+         response.getHeaders().setCacheControl(httpHeaders.getCacheControl());
+      }
+      if (httpHeaders.getETag() != null) {
+         response.getHeaders().setETag(httpHeaders.getETag());
+      }
+      if (httpHeaders.getContentLength() > 0) {
+         response.getHeaders().setContentLength(httpHeaders.getContentLength());
+      }
       response.getHeaders().put(HttpHeaders.CONTENT_RANGE, httpHeaders.getValuesAsList(HttpHeaders.CONTENT_RANGE));
       response.getHeaders().put(HttpHeaders.ACCEPT_RANGES, httpHeaders.getValuesAsList(HttpHeaders.ACCEPT_RANGES));
    }
